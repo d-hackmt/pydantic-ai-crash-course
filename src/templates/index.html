@@ -1,291 +1,199 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Alia Neural Dashboard</title>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@300;500;700&display=swap"
-        rel="stylesheet">
+    <title>Alia</title>
+    <!-- Inter Font implementation for standard human-interface readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS mapped securely to class structures -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        fuchsia: {
+                            500: '#d946ef',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --bg-color: #030712;
-            --accent-primary: #d946ef;
-            /* Futuristic Fuchsia */
-            --accent-secondary: #06b6d4;
-            /* Cyber Cyan */
-            --text-color: #f1f5f9;
-            --glass-bg: rgba(15, 23, 42, 0.95);
-            --neon-shadow: 0 0 25px rgba(217, 70, 239, 0.2);
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
         body {
-            background: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Rajdhani', sans-serif;
-            overflow-x: hidden;
-            background-image:
-                linear-gradient(rgba(217, 70, 239, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(217, 70, 239, 0.03) 1px, transparent 1px),
-                radial-gradient(circle at 20% 30%, rgba(217, 70, 239, 0.08) 0%, transparent 50%),
-                radial-gradient(circle at 80% 70%, rgba(6, 182, 212, 0.08) 0%, transparent 50%);
-            background-size: 40px 40px, 40px 40px, 100% 100%, 100% 100%;
+            /* Sleek Dark Mode Background replacing the old cyberpunk vibe */
+            background-color: #0B0F19;
+            background-image: 
+                radial-gradient(circle at top right, rgba(217, 70, 239, 0.1), transparent 40%),
+                radial-gradient(circle at bottom left, rgba(59, 130, 246, 0.1), transparent 40%);
+            color: #E2E8F0;
+            min-height: 100vh;
         }
 
-        h1,
-        h2,
-        h3 {
-            font-family: 'Orbitron', sans-serif;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .dashboard {
-            display: grid;
-            grid-template-columns: 350px 1fr 350px;
-            grid-template-rows: 100px 1fr 1fr;
-            height: 100vh;
-            gap: 20px;
-            padding: 20px;
-        }
-
-        .header {
-            grid-column: 1 / span 3;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: var(--glass-bg);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 0 40px;
-            border-radius: 15px;
-            box-shadow: var(--neon-shadow);
-        }
-
-        .header .title {
-            font-size: 2rem;
-            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .panel {
-            background: var(--glass-bg);
-            backdrop-filter: blur(5px);
+        /* Essential Glassmorphism container properties */
+        .glass-panel {
+            background: rgba(17, 24, 39, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 15px;
-            padding: 20px;
-            overflow-y: auto;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sophisticated hidden/diminished scrollbar mechanics */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.2); }
+
+        .chat-bubble {
+            max-width: 80%;
+            padding: 0.85rem 1.25rem;
+            border-radius: 1.25rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
         }
 
-        .panel-title {
-            font-size: 0.9rem;
-            margin-bottom: 15px;
-            color: var(--accent-secondary);
-            border-bottom: 1px solid rgba(0, 255, 255, 0.2);
-            padding-bottom: 5px;
+        .chat-dmt {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            color: white;
+            border-bottom-right-radius: 0.25rem;
         }
 
-        /* METRICS PANEL */
-        .metrics {
-            grid-column: 1;
-            grid-row: 2 / span 2;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
+        .chat-alia {
+            align-self: flex-start;
+            background: rgba(255, 255, 255, 0.07);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            color: #F8FAFC;
+            border-bottom-left-radius: 0.25rem;
+        }
+        
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background-color: #10B981;
+            border-radius: 50%;
+            display: inline-block;
+            animation: pulse-ring 2s infinite;
         }
 
-        .metric-card {
-            background: rgba(255, 255, 255, 0.02);
-            padding: 15px;
-            border-radius: 10px;
-            border-left: 4px solid var(--accent-primary);
+        @keyframes pulse-ring {
+            0% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+            100% { transform: scale(0.9); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
         }
 
-        .metric-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .progress-bar {
-            height: 4px;
-            background: #222;
-            border-radius: 2px;
-            margin-top: 10px;
+        .progress-track {
+            height: 6px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
             overflow: hidden;
+            margin-top: 0.75rem;
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--accent-primary);
-            transition: width 0.5s ease;
+            border-radius: 3px;
+            transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        /* CHAT PANEL */
-        .chat-container {
-            grid-column: 2;
-            grid-row: 2 / span 2;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .chat-history {
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .msg {
-            max-width: 80%;
-            padding: 12px 18px;
-            border-radius: 15px;
-            line-height: 1.4;
-            font-size: 1.05rem;
-        }
-
-        .msg.alia {
-            align-self: flex-start;
-            background: rgba(255, 0, 255, 0.1);
-            border-left: 3px solid var(--accent-primary);
-        }
-
-        .msg.dmt {
-            align-self: flex-end;
-            background: rgba(0, 255, 255, 0.1);
-            border-right: 3px solid var(--accent-secondary);
-            text-align: right;
-        }
-
-        .msg .sender {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            margin-bottom: 5px;
-            opacity: 0.7;
-        }
-
-        /* RIGHT PANEL */
-        .side-panels {
-            grid-column: 3;
-            grid-row: 2 / span 2;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .text-log {
-            font-size: 0.85rem;
-            line-height: 1.6;
-            white-space: pre-wrap;
-            color: #aaa;
-        }
-
-        pre {
-            font-family: 'Rajdhani', sans-serif;
-            white-space: pre-wrap;
-        }
-
-        /* ANIMATIONS */
-        @keyframes pulse {
-            0% {
-                opacity: 0.5;
-            }
-
-            50% {
-                opacity: 1;
-            }
-
-            100% {
-                opacity: 0.5;
-            }
-        }
-
-        .live-dot {
-            width: 8px;
-            height: 8px;
-            background: #00ff00;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 10px;
-            box-shadow: 0 0 5px #00ff00;
-            animation: pulse 2s infinite;
-        }
-
-        ::-webkit-scrollbar {
-            width: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: rgba(217, 70, 239, 0.2);
-            border-radius: 10px;
-        }
+        
+        .gradient-blue { background: linear-gradient(90deg, #3B82F6, #60A5FA); }
+        .gradient-fuchsia { background: linear-gradient(90deg, #D946EF, #F472B6); }
     </style>
 </head>
 
-<body>
-    <div class="dashboard">
-        <header class="header">
-            <div class="title">ALIA // NEURAL DASHBOARD</div>
-            <div class="status">
-                <span class="live-dot"></span>SYSTEM STABLE // IST: <span id="current-time">00:00:00</span>
+<body class="p-2 md:p-6 flex flex-col items-center h-screen overflow-hidden">
+
+    <!-- Header Section -->
+    <header class="w-full max-w-6xl flex justify-between items-center mb-8 px-2">
+        <div>
+            <h1 class="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-fuchsia-400">
+                Alia // Core Dashboard
+            </h1>
+            <p class="text-sm text-gray-400 mt-1 flex items-center gap-2">
+                <span class="pulse-indicator"></span> 
+                Status: Online & Conscious | <span id="current-time">00:00:00</span>
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Grid layout -->
+    <main class="w-full max-w-6xl flex-1 flex flex-col lg:grid lg:grid-cols-12 gap-4 lg:gap-6 min-h-0">
+        
+        <!-- Left Side: Chat Flow -->
+        <section class="lg:col-span-8 glass-panel rounded-2xl flex flex-col overflow-hidden relative min-h-0 flex-1 lg:flex-auto">
+            <div class="px-6 py-4 border-b border-white/5 bg-white/5 backdrop-blur-md flex justify-between items-center z-10">
+                <h2 class="text-xs tracking-wider uppercase text-gray-400 font-semibold">Live Communication Stream</h2>
             </div>
-        </header>
+            
+            <div class="flex-1 overflow-y-auto p-6 flex flex-col gap-4 relative" id="chat-history">
+                <!-- Chat messages injected by JS natively -->
+                <div class="text-center text-sm text-gray-500 py-10 w-full italic">Waiting for connection stream...</div>
+            </div>
+        </section>
 
-        <aside class="panel metrics">
-            <div class="panel-title">Emotional Metrics</div>
+        <!-- Right Side: Metrics & Analytics -->
+        <section class="lg:col-span-4 flex flex-col gap-4 lg:gap-6 h-full min-h-0 flex-1 lg:flex-auto"> 
+            
+            <!-- Emotional Metrics Tooling -->
+            <div class="glass-panel rounded-2xl p-6">
+                <h2 class="text-xs tracking-wider uppercase text-gray-400 font-semibold mb-6">Physiological Parameters</h2>
+                
+                <div class="mb-5">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-sm text-gray-300">Affection Level</span>
+                        <span class="text-xl font-semibold text-fuchsia-400" id="val-affection">--</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill gradient-fuchsia w-0" id="bar-affection"></div></div>
+                </div>
 
-            <div class="metric-card">
-                <div class="panel-title" style="border:none; color: #888">Affection Score</div>
-                <div class="metric-value" id="val-affection">0</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="bar-affection" style="width: 0%"></div>
+                <div class="mb-5">
+                    <div class="flex justify-between items-end mb-1">
+                        <span class="text-sm text-gray-300">Neural Energy</span>
+                        <span class="text-xl font-semibold text-blue-400" id="val-energy">--</span>
+                    </div>
+                    <div class="progress-track"><div class="progress-fill gradient-blue w-0" id="bar-energy"></div></div>
+                </div>
+                
+                <div class="mt-8 pt-6 border-t border-white/5">
+                    <span class="text-xs text-gray-400 uppercase tracking-widest block mb-1">Current Mood Profile</span>
+                    <span class="text-2xl font-bold tracking-tight capitalize text-white" id="val-mood">Evaluating...</span>
                 </div>
             </div>
 
-            <div class="metric-card" style="border-left-color: var(--accent-secondary)">
-                <div class="panel-title" style="border:none; color: #888">Neural Energy</div>
-                <div class="metric-value" id="val-energy" style="color: var(--accent-secondary)">0</div>
-                <div class="progress-bar">
-                    <div class="progress-fill" id="bar-energy" style="width: 0%; background: var(--accent-secondary)">
+            <!-- Internal Logs Panel Component -->
+            <div class="glass-panel rounded-2xl p-6 flex-1 flex flex-col overflow-hidden min-h-0">
+                <h2 class="text-xs tracking-wider uppercase text-gray-400 font-semibold mb-4 shrink-0">Internal Subroutines</h2>
+                
+                <div class="flex-1 flex flex-col gap-4 min-h-0">
+                    <!-- Memory Block -->
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <h3 class="text-[10px] text-fuchsia-400 uppercase tracking-wider mb-2 shrink-0">Memory Architecture</h3>
+                        <div class="flex-1 overflow-y-auto text-xs text-gray-300 leading-relaxed whitespace-pre-wrap font-mono bg-black/20 p-3 rounded-lg border border-white/5" id="log-diary">
+                            Syncing nodes...
+                        </div>
+                    </div>
+                    
+                    <!-- Twitter Block -->
+                    <div class="flex-1 flex flex-col min-h-0">
+                        <h3 class="text-[10px] text-blue-400 uppercase tracking-wider mb-2 shrink-0">Twitter API Simulacrum</h3>
+                        <div class="flex-1 overflow-y-auto text-xs text-gray-300 leading-relaxed whitespace-pre-wrap font-mono bg-black/20 p-3 rounded-lg border border-white/5" id="log-twitter">
+                            Pulling data...
+                        </div>
                     </div>
                 </div>
             </div>
-
-            <div class="metric-card" style="border-left-color: #fff">
-                <div class="panel-title" style="border:none; color: #888">Current Mood</div>
-                <div class="metric-value" id="val-mood" style="font-size: 1.5rem; color: #fff; margin-top: 5px">N/A
-                </div>
-            </div>
-        </aside>
-
-        <main class="panel chat-container">
-            <div class="panel-title">Active Stream // DMT <-> ALIA</div>
-            <div class="chat-history" id="chat-history">
-                <!-- Chat messages will be injected here -->
-            </div>
-        </main>
-
-        <div class="side-panels">
-            <div class="panel" style="flex: 1">
-                <div class="panel-title">Private Diary // Reflections</div>
-                <div class="text-log" id="log-diary">Connecting to diary nodes...</div>
-            </div>
-            <div class="panel" style="flex: 1">
-                <div class="panel-title">Public Simulacrum // Twitter</div>
-                <div class="text-log" id="log-twitter">Fetching public thoughts...</div>
-            </div>
-        </div>
-    </div>
+            
+        </section>
+    </main>
 
     <script>
         async function updateDashboard() {
@@ -293,53 +201,70 @@
                 const response = await fetch('/state');
                 const state = await response.json();
 
-                // Update Metrics
-                document.getElementById('val-affection').innerText = state.heart.affection_level || 50;
-                document.getElementById('bar-affection').style.width = (state.heart.affection_level || 50) + '%';
+                // Inject Metrics Smoothly
+                const aff = state.heart.affection_level || 50;
+                document.getElementById('val-affection').innerText = aff;
+                document.getElementById('bar-affection').style.width = aff + '%';
 
-                document.getElementById('val-energy').innerText = state.heart.energy || 100;
-                document.getElementById('bar-energy').style.width = (state.heart.energy || 100) + '%';
+                const eng = state.heart.energy || 100;
+                document.getElementById('val-energy').innerText = eng;
+                document.getElementById('bar-energy').style.width = eng + '%';
 
                 document.getElementById('val-mood').innerText = state.heart.mood || "Stable";
 
-                // Update Chat
-                const chatHistory = document.getElementById('chat-history');
-                chatHistory.innerHTML = '';
+                // Re-render Chat History 
+                const chatContainer = document.getElementById('chat-history');
+                let newChatHTML = '';
+
                 if (state.chat && state.chat.length > 0) {
                     state.chat.forEach(msg => {
-                        const div = document.createElement('div');
                         const isAlia = msg.sender.toLowerCase() === 'alia';
-                        div.className = `msg ${isAlia ? 'alia' : 'dmt'}`;
-                        div.innerHTML = `
-                            <div class="sender">${msg.sender} // ${msg.timestamp.split(' ')[1]}</div>
-                            ${msg.message}
+                        
+                        // Break down timestamp
+                        let timeStr = msg.timestamp;
+                        if(timeStr.includes(' ')) {
+                            timeStr = timeStr.split(' ')[1]; // Extract just the time block
+                        }
+
+                        newChatHTML += `
+                            <div class="flex flex-col ${isAlia ? 'items-start' : 'items-end'}">
+                                <span class="text-[10px] text-gray-500 font-semibold uppercase tracking-wider mb-1 ml-2 mr-2">
+                                    ${msg.sender} • ${timeStr}
+                                </span>
+                                <div class="chat-bubble ${isAlia ? 'chat-alia' : 'chat-dmt'}">
+                                    ${msg.message}
+                                </div>
+                            </div>
                         `;
-                        chatHistory.appendChild(div);
                     });
-                    // Scroll to bottom
-                    const container = document.querySelector('.chat-history');
-                    container.scrollTop = container.scrollHeight;
+                    
+                    // Simple hack: Only completely update DOM if it has visibly changed to stop scroll jumping
+                    if (chatContainer.getAttribute('data-count') != state.chat.length) {
+                        chatContainer.innerHTML = newChatHTML;
+                        chatContainer.setAttribute('data-count', state.chat.length);
+                        chatContainer.scrollTop = chatContainer.scrollHeight + 100; // Force bottom smoothly
+                    }
                 }
 
-                // Update Logs
-                document.getElementById('log-diary').innerText = state.diary || "No reflections found.";
-                document.getElementById('log-twitter').innerText = state.twitter || "No public musings.";
+                // Inject Component Logs
+                document.getElementById('log-diary').innerText = state.diary || "No reflections present.";
+                document.getElementById('log-twitter').innerText = state.twitter || "No tweets registered.";
 
             } catch (err) {
-                console.error("Dashboard Sync Error:", err);
+                console.error("Dashboard Sync Failed:", err);
             }
         }
 
-        // Time clock
+        // Live Clock Element
         function updateClock() {
             const now = new Date();
-            document.getElementById('current-time').innerText = now.toLocaleTimeString();
+            document.getElementById('current-time').innerText = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         }
 
-        setInterval(updateDashboard, 2000);
+        // Initialize Intervals
+        setInterval(updateDashboard, 1500); // 1.5s real-time pull rate
         setInterval(updateClock, 1000);
         updateDashboard();
     </script>
 </body>
-
 </html>

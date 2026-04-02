@@ -1,28 +1,28 @@
-# Module 3: Tools & Integrations
+# Module 3: Tools & External Intelligence
 
-Welcome to the final module! Here we explore **Tools** a.k.a Function Calling. 
+Agents are incredibly powerful, but out of the box, they are completely isolated from the real world. By giving them "Tools," we allow them to execute Python code, tap into external APIs, and browse the web synchronously.
 
-Tools allow agents to escape their training data cutoff. By giving an agent a tool, you allow it to fetch live search results, query a database, or even execute local commands automatically.
+## Core Concepts
+- **Tools / Function Calling**: Native Python functions given directly to the LLM. The LLM decides *when* and *what* parameters to pass to the function.
+- **Common Tools**: Pydantic native integrations for rapidly hooking into third-party services like Tavily Search.
+- **LangChain Interop**: Wrapping ecosystem tools (like WikipediaAPI) into simpler Pydantic AI wrappers. 
 
-## How Tools Work under the hood
+## The Tool Execution Flow
 
 ```mermaid
-sequenceDiagram
-    participant User
-    participant Agent
-    participant Tool as Tool (Python Function)
-    participant External as External DB / API
+flowchart LR
+    Message["User: 'What is the weather in Delhi?'"] --> Agent["Pydantic AI Agent"]
     
-    User->>Agent: "Do you have discount on laptops?"
-    Agent->>Agent: LLM realizes it needs the discount tool
-    Agent->>Tool: Calls tool checking for 'laptops'
-    Tool->>External: Queries live Context/Database via RunContext
-    External-->>Tool: Returns "20%"
-    Tool-->>Agent: Returns string "20%" to LLM
-    Agent->>User: "Yes! There is a 20% discount on laptops."
+    Agent -->|1. Identifies missing knowledge| ToolDetect{"Check available tools"}
+    ToolDetect -->|Found 'check_weather()'| ToolRun["Execute Python Def"]
+    
+    ToolRun -->|API/Data Source| API{"External Internet / API"}
+    API -->|Raw Output| Agent
+    
+    Agent -->|2. Integrates knowledge| Final["Final Answer: 'It is 32C in Delhi!'"]
 ```
 
-## What's inside?
-
-- **1_custom_tools.ipynb**: We explore the difference between simple tools using `@agent.tool_plain` and contextual tools that inject secure database mocks via `@agent.tool` and `RunContext`.
-- **2_integrations_and_langchain.ipynb**: Sometimes you don't want to re-invent the wheel. The LangChain community has hundreds of pre-built tools. We'll show you how to securely wrap the **Wikipedia Tool** right into Pydantic AI.
+## Key Methods Used
+1. **`@agent.tool_plain`**: Attaches a basic, static Python function to an Agent. The agent can invoke this autonomously.
+2. **`@agent.tool`**: Attaches a stateful function, allowing the python code to read from dynamic contexts (like checking an active User ID mapping).
+3. **`tavily_search_tool()`**: An out-of-the-box plugin that instantly grants the agent access to the live internet safely without manual scraping logic.

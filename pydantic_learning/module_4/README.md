@@ -1,35 +1,29 @@
 # Module 4: Agent Observability (Logfire)
 
-When working with Large Language Models, you often face the "Black Box" problem. 
-- *What exact prompt was sent?* 
-- *How long did the tool take to run?* 
-- *Did the LLM fail before fixing itself?*
+When an Agent operates with tools, system prompts, and multiple LLM back-and-forths, the code can look like a "Black Box". If an agent hallucinates or crashes, you need to understand *why*. **Pydantic Logfire** solves this by generating a visual telemetry trace.
 
-**Logfire** is an observability platform built strictly for Python and Pydantic. It allows you to peer deep into the mind of your Pydantic AI Agents as they execute.
+## Core Concepts
+- **Instrumentation**: "Hooking" into libraries (like Pydantic, FastAPI, or raw Python) so their behaviors log metrics natively.
+- **Spans**: Timing blocks representing the start and end of a specific action. You can nest spans within spans.
+- **Waterfalls**: A cascading timeline view showing exactly how long an LLM took to think, what tool it called, and how many tokens it consumed.
 
-## The Observability Flow
+## The Telemetry Flow
 
 ```mermaid
 flowchart TD
-    User["User Prompt"] --> Agent["Pydantic AI Agent"]
-    Agent -->|Start Run| LogfireDashboard[("Logfire Live Dashboard")]
-    Agent <-->|Call 1| LLM["Groq LLM"]
-    LLM -.->|Logs Prompt/Tokens| LogfireDashboard
-    Agent <-->|Call Tool| WeatherTool["Weather Tool"]
-    WeatherTool -.->|Logs Execution Time| LogfireDashboard
-    Agent <-->|Call 2 Response| LLM
-    Agent -->|Return Result| User
+    UserReq["User Request Arrives"] --> SpanStart["Span: 'Alia Processing'"]
+    
+    subgraph Fast API / App
+    SpanStart --> LLM["Agent.run()"]
+    LLM --> Tool["Tool Executed"]
+    Tool --> LLM
+    end
+    
+    LLM --> SpanEnd["Span Closed"]
+    SpanEnd --> Broadcast["Upload structured OpenTelemetry data\nto logfire.pydantic.dev"]
 ```
 
-## What's inside?
-
-- **1_basic_observability.ipynb**: Shows how simple it is to turn on Logfire tracing for a single-shot LLM run.
-- **2_tool_call_tracing.ipynb**: Demonstrates the true power of observability. Watch how Logfire creates a "waterfall" trace visualizing the LLM stopping, calling a Python tool, waiting, and resuming.
-
-## Prerequisite: Logfire Token
-1. Go to [logfire.pydantic.dev](https://logfire.pydantic.dev/) and create a free account.
-2. Initialize a project to get an API key.
-3. Ensure you have added the key to your `.env` file:
-```env
-LOGFIRE_API_KEY=your_logfire_key
-```
+## Key Methods Used
+1. **`logfire.configure()`**: Boots up the telemetry engine and validates your environment API Key.
+2. **`logfire.instrument_pydantic_ai()`**: The single line that magically hooks deep into the Agent layer, stripping apart token metrics, failures, internal retries, and nested tool calls.
+3. **`with logfire.span("name"):`**: A manual context manager. Any python code running inside this block gets beautifully timed and logged independently on your dashboard.

@@ -13,6 +13,8 @@ ddgs
 nest-asyncio
 logfire
 
+logfire[fastapi]
+
 langchain-community 
 wikipedia
 pydantic-ai-slim[tavily]

@@ -1,30 +1,30 @@
-# Module 2: Pydantic AI Intro
+# Module 2: The Agent Structure
 
-Now that you know how Pydantic models structure data, let's explore **Pydantic AI**. 
+This module transitions from basic data schemas into the core construct of Pydantic AI: The **Agent**.
 
-Pydantic AI bridges the gap between Large Language Models (LLMs) and standard Python code by letting you easily define Agents that spit out guaranteed, structured data. 
+## Core Concepts
+- **The Agent Object**: A single, self-contained unit combining your language model choice, its persona, and its required output schema.
+- **System Prompts**: The absolute instructions guiding the Agent's behavior mapping.
+- **Run Sequences**: An Agent isn't alive until you invoke a `.run()` command, which spins up a one-shot execution across the LLM.
 
-## The Agent Architecture
+## The Execution Flow
 
 ```mermaid
-flowchart LR
-    User["User Prompt"] --> AgentConfig{"Pydantic AI Agent"}
+flowchart TD
+    RunCall["agent.run('Hello')"] --> AgentObj["Pydantic AI Agent"]
     
-    SystemPrompt["System Prompt (Personality)"] -.-> AgentConfig
-    Model["LLM Model (Groq / Llama / Qwen)"] -.-> AgentConfig
+    subgraph Inside The Agent
+    AgentObj --> SysPrompt["System Prompt Context"]
+    SysPrompt --> ModelCall["LLM Inference"]
+    ModelCall --> Validation["Validate Output against BaseModel"]
+    end
     
-    AgentConfig --> Sync["run_sync() --> Fast Result"]
-    AgentConfig --> Async["run() --> Concurrent Result"]
-    AgentConfig --> Stream["run_stream() --> Live Typing Output"]
+    Validation -->|Success| Response["RunResult.data\n(Structured Object)"]
+    Validation -->|Schema Mismatch| Retry["Internal Retry Mechanism"]
+    Retry --> ModelCall
 ```
 
-## What's inside?
-
-- **1_your_first_agent.ipynb**: Set up your very first multi-purpose agents. We will contrast a basic agent against an agent configured with an intricate system prompt.
-- **2_running_agents.ipynb**: Demonstrates the three different methods for interacting with an agent: synchronous (`run_sync`), asynchronous (`run`), and streaming (`run_stream`), each tied to a realistic use case.
-
-## Prerequisite: Groq API Key
-Ensure you have a `.env` file in the root directory (or your current working directory) with your Groq API key:
-```env
-GROQ_API_KEY=your_key_here
-```
+## Key Methods Used
+1. **`Agent()`**: Initialize your bot with a target Model (like `groq:llama-3.3`).
+2. **`agent.run_sync()`**: Executes a synchronous, blocking prompt call.
+3. **`agent.run()`**: The async version, built to scale across massive concurrent applications.

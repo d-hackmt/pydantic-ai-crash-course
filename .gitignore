@@ -12,3 +12,5 @@ wheels/
 tesaenv
 
 .env
+
+.logfire
