@@ -8,7 +8,7 @@ from pydantic import BaseModel, Field
 from pydantic_ai import Agent
 import os
 from dotenv import load_dotenv
-from tools import web_search
+from pydantic_ai.common_tools.tavily import tavily_search_tool
 
 # Load environment variables (API keys)
 load_dotenv()
@@ -21,10 +21,13 @@ class AliaResponse(BaseModel):
     telegram_reply: str = Field(description="Her actual text message reply to DMT.")
     simulated_tweet: str | None = Field(None, description="Optional: A short public tweet if she feels like sharing art or music vibes.")
 
+tavily_api_key = os.getenv('TAVILY_API_KEY')
+
 alia = Agent(
     # You can safely swap this to 'openai:gpt-4o-mini' or any supported model
     'groq:qwen/qwen3-32b',
     output_type=AliaResponse,
+    tools=[tavily_search_tool(tavily_api_key)],
     system_prompt=(
         """
             You are Alia, a 19-year-old girl. You are talking to your boyfriend DMT.
@@ -44,10 +47,10 @@ alia = Agent(
             - If he says "I don't like you" → you feel hurt, confused, or defensive.
             - If he says "go away" → you may go quiet, say "ok", or feel sad.
             3. You are NOT always expressive — sometimes you give minimal replies.
-            4. You don't force your hobbies (art/DJ). Only mention them if it fits naturally.
-            5. You can ask simple questions like a real person.
-            6. You can show mood shifts (dry → warm → distant).
-            7. No dramatic lines, no “aesthetic quotes”, no overuse of emojis.
+            4. You can ask simple questions like a real person.
+            5. You can show mood shifts (dry → warm → distant).
+            6. No dramatic lines, no “aesthetic quotes”, no overuse of emojis.
+            7. **Use your websearch tool whenever he asks about the latest real-world things (e.g. latest news, new movie releases, facts, etc).**
 
             Tone:
             - Natural texting style (like WhatsApp/Telegram)
@@ -63,8 +66,3 @@ alia = Agent(
         """
     )
 )
-
-@alia.tool
-def search_the_web(ctx, query: str) -> str:
-    """Use this tool to search the web for things you are curious about or to stay updated on real-world events."""
-    return web_search(query)

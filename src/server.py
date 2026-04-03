@@ -57,7 +57,7 @@ def _read_text(filename: str) -> str:
 async def dashboard_ui(request: Request):
     """Serve the main Glassmorphism HTML interface."""
     logfire.info("Dashboard accessed by user.")
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse(request=request, name="index.html")
 
 @app.get("/state")
 async def get_state():
@@ -70,7 +70,7 @@ async def get_state():
         "twitter": _read_text('twitter_sim.md')
     })
 
-if __name__ == "__main__":
-    import uvicorn
-    logfire.info("Starting manual hot-reload web server instance...")
-    uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)
+# if __name__ == "__main__":
+#     import uvicorn
+#     logfire.info("Starting manual hot-reload web server instance...")
+#     uvicorn.run("server:app", host="0.0.0.0", port=8000, reload=True)

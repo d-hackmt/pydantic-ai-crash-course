@@ -10,7 +10,6 @@ import os
 from datetime import datetime
 import pytz
 import logfire
-from duckduckgo_search import DDGS
 
 # File paths for saving context locally
 HEART_FILE = 'data/heart.json'
@@ -110,19 +109,3 @@ def log_chat(sender: str, message: str):
     except Exception as e:
         logfire.error(f"Error logging chat to frontend database: {e}")
 
-@logfire.instrument("DuckDuckGo Web Search")
-def web_search(query: str) -> str:
-    """Performs a headless external search to provide real-time context to the agent directly from the internet."""
-    logfire.info(f"Initially Searching web for: {query}")
-    try:
-        with DDGS() as ddgs:
-            results = list(ddgs.text(query, max_results=3))
-            if not results:
-                return "No useful information found on the web."
-            
-            search_summary = "\n".join([f"- {r['title']}: {r['body']}" for r in results])
-            logfire.info("Successfully fetched internet search returns.")
-            return f"Search Results against '{query}':\n{search_summary}"
-    except Exception as e:
-        logfire.error(f"DuckDuckGo search error encountered: {e}")
-        return "Search failed."
